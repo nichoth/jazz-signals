@@ -1,48 +1,54 @@
-import Route from 'route-event'
-import { signal } from '@preact/signals'
-import { createLocalNode } from '../src/index.js'
+import { createLocalNode, createAuthStatus } from '../src/index.js'
+// @ts-ignore
+window.createLocalNode = createLocalNode
+// @ts-ignore
+window.createAuthStatus = createAuthStatus
 
-const APP_NAME = 'jazz-signals Todo App'
+// import Route from 'route-event'
+// import { signal } from '@preact/signals'
+// import { createLocalNode } from '../src/index.js'
 
-export async function State () {
-    console.log('hirrar')
-    const route = Route()
-    console.log('woooo')
-    let node, authStatus
-    try {
-        const localNode = await createLocalNode({
-            appName: APP_NAME
-        })
-        node = localNode.node
-        authStatus = localNode.authStatus
-    } catch (err) {
-        console.log('errrrrrrrrrrrr', err)
-    }
+// // const APP_NAME = 'jazz-signals Todo App'
 
-    console.log('aaaaaaaaaaaaaaa')
+// // export async function State () {
+// //     console.log('hirrar')
+// //     const route = Route()
+// //     console.log('woooo')
+// //     let node, authStatus
+// //     try {
+// //         const localNode = await createLocalNode({
+// //             appName: APP_NAME
+// //         })
+// //         node = localNode.node
+// //         authStatus = localNode.authStatus
+// //     } catch (err) {
+// //         console.log('errrrrrrrrrrrr', err)
+// //     }
 
-    const appState = {
-        node,
-        authStatus,
-        routeState: signal<string>(location.pathname + location.search),
-        _route: route
-    }
+// //     console.log('aaaaaaaaaaaaaaa')
 
-    /**
-     * subscribe to route changes
-     */
-    route(function onChange (path) {
-        appState.routeState.value = path
-    })
+// //     const appState = {
+// //         node,
+// //         authStatus,
+// //         routeState: signal<string>(location.pathname + location.search),
+// //         _route: route
+// //     }
 
-    return appState
-}
+// //     /**
+// //      * subscribe to route changes
+// //      */
+// //     route(function onChange (path) {
+// //         appState.routeState.value = path
+// //     })
 
-State.setRoute = function (state:Awaited<ReturnType<typeof State>>, newPath) {
-    state._route.setRoute(newPath)
-}
+// //     return appState
+// // }
 
-State.redirectToLogin = function (state:Awaited<ReturnType<typeof State>>) {
-    if (location.pathname.includes('login')) return
-    state._route.setRoute('/login')
-}
+// // State.setRoute = function (state:Awaited<ReturnType<typeof State>>, newPath) {
+// //     state._route.setRoute(newPath)
+// // }
+
+// // State.redirectToLogin = function (state:Awaited<ReturnType<typeof State>>) {
+// //     if (location.pathname.includes('login')) return
+// //     state._route.setRoute('/login')
+// // }
