@@ -1,7 +1,6 @@
 import { createBrowserNode } from 'jazz-browser'
 import { Signal, signal } from '@preact/signals'
 import { BrowserLocalAuth } from 'jazz-browser-auth-local'
-// import { LocalNode, CoID, CoValueImpl } from 'cojson'
 import { LocalNode } from 'cojson'
 
 export type LoadingStatus = { status: 'loading' }
@@ -25,17 +24,17 @@ export function createAuthStatus ():Signal<AuthStatus> {
 
 export async function createLocalNode ({
     authStatus,
-    logoutCount,
     appName,
     appHostname,
     syncAddress,
 }:{
     authStatus:Signal<AuthStatus>;
-    logoutCount:Signal<number>;
     appName:string;
     appHostname?:string;
     syncAddress?:string;
 }):Promise<{ done:()=>void, node:LocalNode }> {
+    const logoutCount = signal<number>(0)
+
     const localAuthObj = new BrowserLocalAuth(
         {
             onReady (next) {
