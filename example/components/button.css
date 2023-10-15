@@ -1,0 +1,21 @@
+button.btn {
+    border: none;
+    outline: 3px solid;
+    border-radius: 5px;
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+    background-color: transparent;
+    transition: 0.4s all;
+
+    &:hover {
+        outline-width: 5px;
+    }
+
+    &.primary {
+        outline-color: #0077ff;
+
+        &:hover {
+            background-color: rgb(0 255 255 / 28%);
+        }
+    }
+}

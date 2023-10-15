@@ -1,5 +1,5 @@
-import { createBrowserNode } from 'jazz-browser'
-import { Signal, effect, signal } from '@preact/signals'
+import { createBrowserNode, AuthProvider } from 'jazz-browser'
+import { Signal, signal } from '@preact/signals'
 import { BrowserLocalAuth } from 'jazz-browser-auth-local'
 import { LocalNode } from 'cojson'
 
@@ -18,23 +18,15 @@ export type AuthStatus = { status:null } |
     ReadyStatus |
     SignedInStatus
 
-export function createAuthStatus ():Signal<AuthStatus> {
-    return signal({ status: null })
-}
-
-export async function createLocalNode ({
-    authStatus,
+export function createLocalAuth ({
     appName,
-    appHostname,
-    syncAddress,
+    appHostname
 }:{
-    authStatus:Signal<AuthStatus>;
     appName:string;
     appHostname?:string;
-    syncAddress?:string;
-}):Promise<{ done:()=>void, node:LocalNode }> {
+}):{ authProvider:AuthProvider, authStatus:Signal<AuthStatus> } {
+    const authStatus:Signal<AuthStatus> = signal({ status: null })
     const logoutCount = signal<number>(0)
-
     const localAuthObj = new BrowserLocalAuth(
         {
             onReady (next) {
@@ -61,16 +53,20 @@ export async function createLocalNode ({
         appHostname
     )
 
+    return { authProvider: localAuthObj, authStatus }
+}
+
+export async function createLocalNode ({
+    auth,
+    syncAddress,
+}:{
+    auth:AuthProvider;
+    syncAddress?:string;
+}):Promise<{ done:()=>void, node:LocalNode }> {
     let _done:(() => void) = done
 
-    effect(() => {
-        console.log('effect', authStatus.value)
-        if (authStatus.value.status !== 'ready') return
-        (authStatus.value as ReadyStatus).signUp('test-username')
-    })
-
     const nodeHandle = await createBrowserNode({
-        auth: localAuthObj,
+        auth,
         syncAddress
     })
 
