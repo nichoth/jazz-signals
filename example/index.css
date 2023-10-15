@@ -7,9 +7,26 @@ button {
     display: flex;
     gap: 2rem;
     flex-direction: column;
-    width: fit-content;
+    width: calc(100% - 2rem);
 
     & button {
         min-width: 10rem;
+        max-width: 12rem;
+        margin: 0 auto;
+    }
+}
+
+form.register {
+    margin: 2rem auto;
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+    width: calc(100% - 2rem);
+    align-items: flex-end;
+
+    & button {
+        min-width: 10rem;
+        max-width: 12rem;
+        margin-right: 1rem;
     }
 }
