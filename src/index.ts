@@ -24,7 +24,11 @@ export function createLocalAuth ({
 }:{
     appName:string;
     appHostname?:string;
-}):{ authProvider:AuthProvider, authStatus:Signal<AuthStatus> } {
+}):{
+    authProvider:AuthProvider;
+    authStatus:Signal<AuthStatus>;
+    logoutCount:Signal<number>;
+} {
     const authStatus:Signal<AuthStatus> = signal({ status: null })
     const logoutCount = signal<number>(0)
     const localAuthObj = new BrowserLocalAuth(
@@ -53,17 +57,19 @@ export function createLocalAuth ({
         appHostname
     )
 
-    return { authProvider: localAuthObj, authStatus }
+    return { authProvider: localAuthObj, authStatus, logoutCount }
 }
 
 export function createLocalNode ({
     auth,
     syncAddress,
-    authStatus
+    authStatus,
+    logoutCount
 }:{
     auth:AuthProvider;
     syncAddress?:string;
     authStatus:Signal<AuthStatus>
+    logoutCount:Signal<number>
 }):{
     done:()=>void,
     node:Signal<null|LocalNode>
@@ -71,11 +77,23 @@ export function createLocalNode ({
     const nodeSignal:Signal<null|LocalNode> = signal(null)
     let _done:(() => void)
 
+    let count = logoutCount.peek()
+
     effect(async () => {
+        if (logoutCount.value > count) {
+            // create a new node if you log out
+            count = logoutCount.value
+            const nodeHandle = await createBrowserNode({ auth, syncAddress })
+            nodeSignal.value = nodeHandle.node
+            _done = nodeHandle.done
+        }
+
         // only create a localNode if there is no authStatus
         // NOTE you *must* create a localNode before the authStatus will change
         //   to 'ready'
         if (authStatus.value.status !== null) return
+
+        // there is not an authStatus, so create a node
 
         const nodeHandle = await createBrowserNode({
             auth,

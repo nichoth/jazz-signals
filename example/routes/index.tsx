@@ -1,4 +1,5 @@
 import Router from '@nichoth/routes'
+import { Home } from './home.js'
 // import { Login } from './pages/login.jsx'
 // import { MainView } from './pages/main.jsx'
 // import { Home } from './pages/home.jsx'
@@ -6,24 +7,22 @@ import Router from '@nichoth/routes'
 export default function _Router ():ReturnType<Router> {
     const router = Router()
 
-    router.addRoute('/', (_, emit) => {
-        return (props) => {
-            return (<div>
-                home route
-            </div>
-            )
-        }
+    router.addRoute('/', () => {
+        return Home
     })
 
-    router.addRoute('/login', (_, emit) => {
+    router.addRoute('/login', () => {
         return (props) => {
             return <div>login</div>
         }
     })
 
-    router.addRoute('/id/:id', (match, emit) => {
-        return (props) => {
-            return <div>id/id</div>
+    router.addRoute('/id/:id', () => {
+        return ({ params }) => {
+            return (<div>
+                id route <br />
+                the params... {params.id}
+            </div>)
         }
     })
 

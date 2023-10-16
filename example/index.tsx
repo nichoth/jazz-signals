@@ -1,47 +1,45 @@
 import { JSX, render } from 'preact'
 import { Primary as BtnPrimary } from './components/button.js'
 import { useState, useMemo } from 'preact/hooks'
-import { Signal } from '@preact/signals'
-import { ResolvedAccount } from 'jazz-autosub'
 import { TextInput } from './components/text-input.js'
-import { ReadyStatus, createLocalAuth, createLocalNode } from '../src/index.js'
-import { profile } from '../src/auto-sub.js'
+import { State } from './state.js'
+import { ReadyStatus } from '../src/index.js'
+import { profile as getProfile } from '../src/auto-sub.js'
+import Router from './routes/index.jsx'
 import './index.css'
 
-const { authProvider, authStatus } = createLocalAuth({ appName: 'test' })
-const { node } = createLocalNode({ auth: authProvider, authStatus })
-
-// @ts-ignore
-window.node = node
-// @ts-ignore
-window.authStatus = authStatus
-
-interface FormControls extends HTMLFormControlsCollection {
-    username: HTMLInputElement;
-}
+const router = Router()
+const state = State()
+const { localNode: node, authStatus } = state
 
 function Example () {
-    /* eslint-disable */
-    const { profile: myProfile } = useMemo<{
-        profile:Signal<null|ResolvedAccount>;
-        unsubscribe:()=>void;
-    }>(() => {
-        return profile(node.value)
+    const { profile } = useMemo(() => {
+        return getProfile(node.value)
     }, [node.value])
-    /* eslint-enable */
 
     // @ts-ignore
-    window.myProfile = myProfile
+    window.profile = profile
 
-    console.log('profile', myProfile.value)
+    console.log('render', profile.value)
+
+    const match = router.match(state.route.value)
+    if (!match) {
+        return (<div className="404">
+            Four Oh Four
+        </div>)
+    }
+
+    const ChildNode = match.action(match, state.route)
 
     return (<div className="jazz-signals-example">
         {(authStatus.value.status === 'signedIn' ?
             (<div>
                 <div>
                     you are
-                    <strong>{' ' + myProfile.value?.profile?.name}</strong>
+                    <strong>{' ' + profile.value?.profile?.name}</strong>
                 </div>
+
+                <ChildNode state={state} params={match.params} />
             </div>) :
             <LoginPage />
         )}
@@ -67,7 +65,7 @@ function LoginPage () {
     function createAccount (ev:JSX.TargetedEvent) {
         ev.preventDefault()
         const { elements } = (ev.target as HTMLFormElement)
-        const username = ((elements as FormControls).username).value
+        const username = (elements.namedItem('username') as HTMLInputElement).value
         console.log('create account', username);
         (authStatus.value as ReadyStatus).signUp(username)
     }
