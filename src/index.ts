@@ -69,14 +69,21 @@ export function createLocalNode ({
     node:Signal<null|LocalNode>
 } {
     const nodeSignal:Signal<null|LocalNode> = signal(null)
-    const _done:(() => void) = done
+    let _done:(() => void)
 
     effect(async () => {
+        // only create a localNode if there is no authStatus
+        // NOTE you *must* create a localNode before the authStatus will change
+        //   to 'ready'
         if (authStatus.value.status !== null) return
-        nodeSignal.value = (await createBrowserNode({
+
+        const nodeHandle = await createBrowserNode({
             auth,
             syncAddress
-        })).node
+        })
+
+        nodeSignal.value = nodeHandle.node
+        _done = nodeHandle.done
     })
 
     function done () {
