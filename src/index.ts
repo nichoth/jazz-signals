@@ -56,26 +56,42 @@ export function createLocalAuth ({
     return { authProvider: localAuthObj, authStatus }
 }
 
-export async function createLocalNode ({
+export function createLocalNode ({
     auth,
     syncAddress,
+    authStatus
 }:{
     auth:AuthProvider;
     syncAddress?:string;
-}):Promise<{ done:()=>void, node:LocalNode }> {
+    authStatus:Signal<AuthStatus>
+}):Signal<{ done:()=>void, node:null|LocalNode }> {
+    const sig:Signal<{
+        done:()=>void,
+        node:null|LocalNode
+    }> = signal({ done, node: null })
+
     let _done:(() => void) = done
 
-    const nodeHandle = await createBrowserNode({
-        auth,
-        syncAddress
-    })
+    if (authStatus.value.status !== null) {
+        return sig
+    }
 
-    _done = nodeHandle.done
+    (async () => {
+        const nodeHandle = await createBrowserNode({
+            auth,
+            syncAddress
+        })
+
+        sig.value = { node: nodeHandle.node, done }
+
+        _done = nodeHandle.done
+    })()
 
     function done () {
         if (!_done) throw new Error('Called `done` before it exists')
         _done()
     }
 
-    return { done, node: nodeHandle.node }
+    // return { done, node: nodeHandle.node }
+    return sig
 }

@@ -16,7 +16,10 @@ const localNode = signal<LocalNode|null>(null)
 effect(async () => {
     console.log('auth status...', authStatus.value)
     if (authStatus.value.status !== null) return
-    localNode.value = (await createLocalNode({ auth: authProvider })).node
+    localNode.value = (await createLocalNode({
+        auth: authProvider,
+        authStatus
+    })).node
 })
 
 // @ts-ignore
@@ -29,25 +32,25 @@ interface FormControls extends HTMLFormControlsCollection {
 }
 
 function Example () {
-    const myProfile = useMemo<Signal<null|ResolvedAccount>>(() => {
-        return profile(localNode.value as LocalNode)
+    /* eslint-disable */
+    const { profile: myProfile } = useMemo<{
+        profile:Signal<null|ResolvedAccount>;
+        unsubscribe:()=>void;
+    }>(() => {
+        return profile(localNode.value)
     }, [localNode.value])
+    /* eslint-enable */
 
     // @ts-ignore
     window.myProfile = myProfile
     console.log('profile', myProfile.value)
 
-    // console.log('render', subscription.value)
-
     return (<div className="jazz-signals-example">
         {(authStatus.value.status === 'signedIn' ?
             (<div>
-                <span>is me?</span>
                 <div>
-                    <span><strong>{(myProfile.value && myProfile.value.isMe ?
-                        'yes' :
-                        'no'
-                    )}</strong></span>
+                    you are
+                    <strong>{' ' + myProfile.value?.profile?.name}</strong>
                 </div>
             </div>) :
             <LoginPage />
@@ -61,9 +64,9 @@ function LoginPage () {
     const [state, setState] = useState<null|'register'>(null)
 
     function login (ev:MouseEvent) {
-        ev.preventDefault();
+        ev.preventDefault()
+        console.log('login');
         (authStatus.value as ReadyStatus).logIn()
-        console.log('login')
     }
 
     function register (ev:MouseEvent) {
