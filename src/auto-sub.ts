@@ -6,8 +6,9 @@ import { LocalNode } from 'cojson'
  * Create a subscription to a node
  */
 
-export function autoSub (node:LocalNode):Signal<null|ResolvedAccount> {
+export function profile (node:LocalNode|null):Signal<null|ResolvedAccount> {
     const sub:Signal<null|ResolvedAccount> = signal(null)
+    if (!node) return sub
 
     const unsubscribe = _autoSub('me', node, (resolved:ResolvedAccount) => {
         console.log('**resolved**', resolved)
