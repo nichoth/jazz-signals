@@ -1,5 +1,5 @@
 import { createBrowserNode, AuthProvider } from 'jazz-browser'
-import { Signal, signal } from '@preact/signals'
+import { Signal, signal, effect } from '@preact/signals'
 import { BrowserLocalAuth } from 'jazz-browser-auth-local'
 import { LocalNode } from 'cojson'
 
@@ -64,34 +64,25 @@ export function createLocalNode ({
     auth:AuthProvider;
     syncAddress?:string;
     authStatus:Signal<AuthStatus>
-}):Signal<{ done:()=>void, node:null|LocalNode }> {
-    const sig:Signal<{
-        done:()=>void,
-        node:null|LocalNode
-    }> = signal({ done, node: null })
+}):{
+    done:()=>void,
+    node:Signal<null|LocalNode>
+} {
+    const nodeSignal:Signal<null|LocalNode> = signal(null)
+    const _done:(() => void) = done
 
-    let _done:(() => void) = done
-
-    if (authStatus.value.status !== null) {
-        return sig
-    }
-
-    (async () => {
-        const nodeHandle = await createBrowserNode({
+    effect(async () => {
+        if (authStatus.value.status !== null) return
+        nodeSignal.value = (await createBrowserNode({
             auth,
             syncAddress
-        })
-
-        sig.value = { node: nodeHandle.node, done }
-
-        _done = nodeHandle.done
-    })()
+        })).node
+    })
 
     function done () {
         if (!_done) throw new Error('Called `done` before it exists')
         _done()
     }
 
-    // return { done, node: nodeHandle.node }
-    return sig
+    return { done, node: nodeSignal }
 }

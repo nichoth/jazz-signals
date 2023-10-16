@@ -1,8 +1,7 @@
 import { JSX, render } from 'preact'
 import { Primary as BtnPrimary } from './components/button.js'
 import { useState, useMemo } from 'preact/hooks'
-import { effect, signal, Signal } from '@preact/signals'
-import { LocalNode } from 'cojson'
+import { Signal } from '@preact/signals'
 import { ResolvedAccount } from 'jazz-autosub'
 import { TextInput } from './components/text-input.js'
 import { ReadyStatus, createLocalAuth, createLocalNode } from '../src/index.js'
@@ -10,20 +9,10 @@ import { profile } from '../src/auto-sub.js'
 import './index.css'
 
 const { authProvider, authStatus } = createLocalAuth({ appName: 'test' })
-
-const localNode = signal<LocalNode|null>(null)
-
-effect(async () => {
-    console.log('auth status...', authStatus.value)
-    if (authStatus.value.status !== null) return
-    localNode.value = (await createLocalNode({
-        auth: authProvider,
-        authStatus
-    })).node
-})
+const { node } = createLocalNode({ auth: authProvider, authStatus })
 
 // @ts-ignore
-window.node = localNode
+window.node = node
 // @ts-ignore
 window.authStatus = authStatus
 
@@ -37,12 +26,13 @@ function Example () {
         profile:Signal<null|ResolvedAccount>;
         unsubscribe:()=>void;
     }>(() => {
-        return profile(localNode.value)
-    }, [localNode.value])
+        return profile(node.value)
+    }, [node.value])
     /* eslint-enable */
 
     // @ts-ignore
     window.myProfile = myProfile
+
     console.log('profile', myProfile.value)
 
     return (<div className="jazz-signals-example">
