@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@preact/signals": "^1.2.1",
+    "cojson": "^0.4.13",
     "jazz-autosub": "^0.4.13",
     "jazz-browser": "^0.4.15",
     "jazz-browser-auth-local": "^0.4.15"

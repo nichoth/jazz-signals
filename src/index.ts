@@ -1,7 +1,7 @@
 import { createBrowserNode, AuthProvider } from 'jazz-browser'
 import { Signal, signal, effect } from '@preact/signals'
 import { BrowserLocalAuth } from 'jazz-browser-auth-local'
-import { LocalNode } from 'cojson'
+import { LocalNode, CoID, CoValue } from 'cojson'
 
 export type LoadingStatus = { status: 'loading' }
 export type ReadyStatus = {
@@ -110,4 +110,37 @@ export function createLocalNode ({
     }
 
     return { done, node: nodeSignal }
+}
+
+/**
+ * Create a new signal subscribed to some data in the given localNode.
+ *
+ * @returns {Signal<[ T|null, (()=>void)|null ]>} Return an array like
+ * [ signal, unsubscribeFunction ]
+ */
+export function telepathicSignal<T extends CoValue> ({
+    id,
+    localNode
+}:{
+    id?:CoID<T>,
+    localNode:Signal<LocalNode|null>
+}):Signal<[ T|null, (()=>void)|null ]> {
+    const state:Signal<[ T|null, (()=>void)|null ]> = signal([null, null])
+
+    const dispose = effect(async () => {
+        if (!id || !localNode.value) return
+
+        const node = await localNode.value.load(id)
+
+        const unsubscribe = node.subscribe(newState => {
+            state.value = [newState as T, allDone]
+
+            function allDone () {
+                unsubscribe()
+                dispose()
+            }
+        })
+    })
+
+    return state
 }

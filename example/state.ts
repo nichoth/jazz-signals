@@ -42,9 +42,7 @@ export function State ():{
     return state
 }
 
-export function createList (state:ReturnType<typeof State>, {
-    name
-}:{
+export function createList (state:ReturnType<typeof State>, { name }:{
     name:string
 }) {
     const projectGroup = state.localNode.value!.createGroup()

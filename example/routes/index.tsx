@@ -1,5 +1,6 @@
 import Router from '@nichoth/routes'
 import { Home } from './home.js'
+import { ListView } from './list.js'
 // import { Login } from './pages/login.jsx'
 // import { MainView } from './pages/main.jsx'
 // import { Home } from './pages/home.jsx'
@@ -18,12 +19,7 @@ export default function _Router ():ReturnType<Router> {
     })
 
     router.addRoute('/id/:id', () => {
-        return ({ params }) => {
-            return (<div>
-                id route <br />
-                the params... {params.id}
-            </div>)
-        }
+        return ListView
     })
 
     return router

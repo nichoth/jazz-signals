@@ -14,7 +14,6 @@ export function profile (node:LocalNode|null):{
     if (!node) return { profile: prof, unsubscribe: () => {} }
 
     const unsubscribe = _autoSub('me', node, (resolved:ResolvedAccount) => {
-        console.log('**resolved**', resolved)
         prof.value = resolved
     })
 
