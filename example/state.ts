@@ -1,5 +1,8 @@
-import { Signal, signal } from '@preact/signals'
-import { Account, LocalNode } from 'cojson'
+import { Signal, computed, effect, signal } from '@preact/signals'
+import {
+    Account,
+    LocalNode,
+} from 'cojson'
 import { Resolved } from 'jazz-autosub'
 import Route from 'route-event'
 import {
@@ -53,25 +56,32 @@ export function State ():{
     return state
 }
 
-export function setProfile (state:ReturnType<typeof State>, username:string) {
+export function createNewProfile (state:ReturnType<typeof State>, username:string) {
     (state.authStatus.value as ReadyStatus).signUp(username)
 }
 
 export function createList (state:ReturnType<typeof State>, { name }:{
     name:string
 }) {
-    const projectGroup = state.localNode.value!.createGroup()
-    const project = projectGroup.createMap<TodoProject>()
-    const tasks = projectGroup.createList<ListOfTasks>()
+    const { profile } = state
 
-    // We edit the todo project to initialise it.
-    // Inside the `.mutate` callback we can mutate a CoValue
-    project.mutate(_project => {
-        _project.set('title', name)
-        _project.set('tasks', tasks.id)
+    const newProject = computed(() => {
+        if (!profile.value) return
+        const projectGroup = profile.value.createGroup()
+
+        return projectGroup.createMap<TodoProject>({
+            title: name,
+            tasks: projectGroup.createList<ListOfTasks>().id
+        })
     })
 
-    state._setRoute(`/id/${project.id}`)
+    /**
+     * Set the route to the new project
+     */
+    effect(() => {
+        if (!newProject.value) return
+        state._setRoute(`/id/${newProject.value.id}`)
+    })
 
     return state
 }

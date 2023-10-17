@@ -2,7 +2,7 @@ import { JSX, render } from 'preact'
 import { Primary as BtnPrimary } from './components/button.js'
 import { useState } from 'preact/hooks'
 import { TextInput } from './components/text-input.js'
-import { State, setProfile } from './state.js'
+import { State, createNewProfile } from './state.js'
 import { ReadyStatus } from '../src/index.js'
 import Router from './routes/index.jsx'
 import './index.css'
@@ -25,8 +25,6 @@ function Example () {
     }
 
     const ChildNode = match.action(match, state.route)
-
-    // const name = profile.value?.profile?.name
 
     return (<div className="jazz-signals-example">
         {(authStatus.value.status === 'signedIn' ?
@@ -59,7 +57,7 @@ function LoginPage ({ state }) {
         const { elements } = (ev.target as HTMLFormElement)
         const username = (elements.namedItem('username') as HTMLInputElement).value
         console.log('create account', username)
-        setProfile(state, username)
+        createNewProfile(state, username)
     }
 
     return (<div className="login">

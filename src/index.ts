@@ -138,20 +138,20 @@ export function profile (node:Signal<LocalNode|null>):{
     profile:Signal<null|ResolvedAccount>;
     unsubscribe:()=>void
 } {
-    const prof:Signal<null|ResolvedAccount> = signal(null)
-    let unsub = () => {}
+    const profile:Signal<null|ResolvedAccount> = signal(null)
+    let _unsubscribe = () => {}
 
     effect(() => {
-        if (!node.value) return { profile: prof, unsubscribe: () => {} }
+        if (!node.value) return
 
-        unsub = autoSub('me', node.value, (resolved:ResolvedAccount) => {
-            prof.value = resolved
+        _unsubscribe = autoSub('me', node.value, (resolved:ResolvedAccount) => {
+            profile.value = resolved
         })
     })
 
     function unsubscribe () {
-        unsub()
+        _unsubscribe()
     }
 
-    return { profile: prof, unsubscribe }
+    return { profile, unsubscribe }
 }

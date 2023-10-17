@@ -20,6 +20,10 @@ export const Home:FunctionComponent<{
     console.log('profile', profile.value)
 
     return (<div className="route home">
+        <div>
+            You are <strong>{profile.value?.profile?.name}</strong>
+        </div>
+
         {profile.value?.root?.projects?.length ? <h1>My Projects</h1> : null}
         {profile.value?.root?.projects?.map((project) => {
             return <div key={project.id}>{project}</div>

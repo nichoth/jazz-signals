@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'preact'
 import { useCallback, useState } from 'preact/hooks'
 import { TextInput } from './text-input.jsx'
-import { Button } from './button.jsx'
+import { Primary as BtnPrimary, Button } from './button.jsx'
 
 export const SubmittableInput:FunctionComponent<{
     onSubmit: (text: string) => any;
@@ -9,8 +9,9 @@ export const SubmittableInput:FunctionComponent<{
     disabled?: boolean;
     minLength?: number;
     action:string;
+    primary?:boolean;
 }> = function SubmittableInput (props) {
-    const { disabled, onSubmit, displayName, action, minLength } = props
+    const { primary, disabled, onSubmit, displayName, action, minLength } = props
     const [isValid, setValid] = useState(false)
 
     const handleSubmit = useCallback(function handleSubmit (ev) {
@@ -56,11 +57,20 @@ export const SubmittableInput:FunctionComponent<{
                 required={true}
             />
 
-            <Button disabled={disabled || !isValid} type="submit"
-                isSpinning={false}
-            >
-                {action}
-            </Button>
+            {primary ?
+                (<BtnPrimary
+                    type="submit"
+                    disabled={disabled || !isValid}
+                    isSpinning={false}
+                >
+                    {action}
+                </BtnPrimary>) :
+                (<Button disabled={disabled || !isValid} type="submit"
+                    isSpinning={false}
+                >
+                    {action}
+                </Button>)
+            }
         </form>
     )
 }

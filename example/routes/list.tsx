@@ -84,6 +84,7 @@ const NewTaskInputRow:FunctionComponent<{
     disabled,
 }) {
     return (<SubmittableInput
+        primary={true}
         action="Create a new task"
         onSubmit={onCreateTask}
         displayName="New task name"
