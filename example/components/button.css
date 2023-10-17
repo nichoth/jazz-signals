@@ -9,6 +9,10 @@ button.btn {
 
     &:hover {
         outline-width: 5px;
+
+        &:disabled {
+            background-color: transparent;
+        }
     }
 
     &.primary {
@@ -16,10 +20,16 @@ button.btn {
 
         &:hover {
             background-color: rgb(0 255 255 / 28%);
+            &:disabled {
+                background-color: transparent;
+            }
         }
 
         &:disabled {
             outline-color: #0077ff5c;
+            &:hover {
+                background-color: transparent;
+            }
         }
     }
 }

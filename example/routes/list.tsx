@@ -61,8 +61,8 @@ export const ListView:FunctionComponent<{
                                 name="done-status"
                             />
                             {task?.get('done') ?
-                                (<s>{task.get('text')}</s>) :
-                                (<span>{task?.get('text')}</span>)
+                                (<span>{' '}<s>{task.get('text')}</s></span>) :
+                                (<span>{' ' + task?.get('text')}</span>)
                             }
                         </label>
                     </form>

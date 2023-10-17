@@ -1,9 +1,7 @@
-import { Signal, computed, effect, signal } from '@preact/signals'
-import {
-    Account,
-    LocalNode,
-} from 'cojson'
-import { Resolved } from 'jazz-autosub'
+import { Signal, effect, signal } from '@preact/signals'
+import { Account, LocalNode, Profile, AccountMeta, ProfileMeta } from 'cojson'
+import { ProfileShape } from 'cojson/src/coValues/account.js'
+import { Resolved, ResolvedAccount } from 'jazz-autosub'
 import Route from 'route-event'
 import {
     profile as getProfile,
@@ -12,12 +10,16 @@ import {
     AuthStatus,
     ReadyStatus
 } from '../src/index.js'
-import { Task, ListOfTasks, TodoProject } from './types.js'
+import { Task, ListOfTasks, TodoProject, TodoAccountRoot } from './types.js'
 
 export function State ():{
     localNode:Signal<LocalNode|null>;
     authStatus:Signal<AuthStatus>;
-    profile:Signal<Resolved<Account>|null>;
+    profile:Signal<ResolvedAccount<Account<
+        Profile<ProfileShape, ProfileMeta>,
+        TodoAccountRoot,
+        AccountMeta
+    >>|null>;
     logoutCount:Signal<number>;
     route:Signal<string>;
     _setRoute:(path:string)=>void;
@@ -37,7 +39,7 @@ export function State ():{
         logoutCount
     })
 
-    const { profile } = getProfile(node)
+    const { profile } = getProfile<Profile, TodoAccountRoot, AccountMeta>(node)
 
     const onRoute = Route()
     const state = {
@@ -63,24 +65,21 @@ export function createNewProfile (state:ReturnType<typeof State>, username:strin
 export function createList (state:ReturnType<typeof State>, { name }:{
     name:string
 }) {
+    if (!name) throw new Error('missing list name')
+
     const { profile } = state
 
-    const newProject = computed(() => {
+    effect(() => {
         if (!profile.value) return
         const projectGroup = profile.value.createGroup()
 
-        return projectGroup.createMap<TodoProject>({
+        const project = projectGroup.createMap<TodoProject>({
             title: name,
             tasks: projectGroup.createList<ListOfTasks>().id
         })
-    })
 
-    /**
-     * Set the route to the new project
-     */
-    effect(() => {
-        if (!newProject.value) return
-        state._setRoute(`/id/${newProject.value.id}`)
+        profile.value.root?.projects?.append(project.id)
+        state._setRoute(`/id/${project.id}`)
     })
 
     return state

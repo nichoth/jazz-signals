@@ -1,7 +1,15 @@
 import { createBrowserNode, AuthProvider } from 'jazz-browser'
 import { Signal, signal, effect } from '@preact/signals'
 import { BrowserLocalAuth } from 'jazz-browser-auth-local'
-import { LocalNode, CoID, CoValue } from 'cojson'
+import {
+    Profile,
+    LocalNode,
+    CoID,
+    CoValue,
+    CoMap,
+    Account,
+    AccountMeta
+} from 'cojson'
 import { ResolvedAccount, Resolved, autoSub } from 'jazz-autosub'
 
 export type LoadingStatus = { status: 'loading' }
@@ -84,9 +92,11 @@ export function createLocalNode ({
         if (logoutCount.value > count) {
             // create a new node if you log out
             count = logoutCount.value
+            done()
             const nodeHandle = await createBrowserNode({ auth, syncAddress })
             nodeSignal.value = nodeHandle.node
             _done = nodeHandle.done
+            return
         }
 
         // only create a localNode if there is no authStatus
@@ -134,23 +144,28 @@ export function telepathicSignal<T extends CoValue> ({
 /**
  * Get your profile
  */
-export function profile (node:Signal<LocalNode|null>):{
-    profile:Signal<null|ResolvedAccount>;
+export function profile<
+    P extends Profile = Profile,
+    T extends CoMap = CoMap,
+    Meta extends AccountMeta = AccountMeta
+> (node:Signal<LocalNode|null>):{
+    profile:Signal<null|ResolvedAccount<Account<P, T, Meta>>>;
     unsubscribe:()=>void
 } {
-    const profile:Signal<null|ResolvedAccount> = signal(null)
+    const profile:Signal<null|ResolvedAccount<Account<P, T, Meta>>> = signal(null)
     let _unsubscribe = () => {}
 
-    effect(() => {
+    const dispose = effect(() => {
         if (!node.value) return
 
         _unsubscribe = autoSub('me', node.value, (resolved:ResolvedAccount) => {
-            profile.value = resolved
+            profile.value = resolved as ResolvedAccount<Account<P, T, Meta>>
         })
     })
 
     function unsubscribe () {
         _unsubscribe()
+        dispose()
     }
 
     return { profile, unsubscribe }
