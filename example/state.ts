@@ -78,6 +78,8 @@ export function createList (state:ReturnType<typeof State>, { name }:{
             tasks: projectGroup.createList<ListOfTasks>().id
         })
 
+        console.log('project...', project, profile.value.root)
+
         profile.value.root?.projects?.append(project.id)
         state._setRoute(`/id/${project.id}`)
     })
