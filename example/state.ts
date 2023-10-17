@@ -3,12 +3,12 @@ import { Account, LocalNode } from 'cojson'
 import { Resolved } from 'jazz-autosub'
 import Route from 'route-event'
 import {
+    profile as getProfile,
     createLocalNode,
     createLocalAuth,
     AuthStatus,
     ReadyStatus
 } from '../src/index.js'
-import { profile as getProfile } from '../src/auto-sub.js'
 import { Task, ListOfTasks, TodoProject } from './types.js'
 
 export function State ():{

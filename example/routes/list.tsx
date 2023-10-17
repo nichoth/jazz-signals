@@ -20,7 +20,6 @@ export const ListView:FunctionComponent<{
     const { localNode } = state
 
     const [project] = useMemo(() => {
-        console.log('in memo')
         if (!localNode.value) return []
 
         return telepathicSignal<TodoProject>({
@@ -28,8 +27,6 @@ export const ListView:FunctionComponent<{
             node: localNode.value
         })
     }, [params.id, localNode.value])
-
-    console.log('render list', project?.value)
 
     const handleChange = useCallback(function handleChange (
         task:ResolvedCoMap<Task>,
