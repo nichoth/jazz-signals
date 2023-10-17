@@ -1,13 +1,20 @@
 import { Signal, signal } from '@preact/signals'
-import { createLocalNode, createLocalAuth, AuthStatus } from '../src/index.js'
-import { LocalNode } from 'cojson'
-import { Task, ListOfTasks, TodoProject } from './types.js'
+import { Account, LocalNode } from 'cojson'
 import { Resolved } from 'jazz-autosub'
 import Route from 'route-event'
+import {
+    createLocalNode,
+    createLocalAuth,
+    AuthStatus,
+    ReadyStatus
+} from '../src/index.js'
+import { profile as getProfile } from '../src/auto-sub.js'
+import { Task, ListOfTasks, TodoProject } from './types.js'
 
 export function State ():{
     localNode:Signal<LocalNode|null>;
     authStatus:Signal<AuthStatus>;
+    profile:Signal<Resolved<Account>|null>;
     logoutCount:Signal<number>;
     route:Signal<string>;
     _setRoute:(path:string)=>void;
@@ -27,10 +34,13 @@ export function State ():{
         logoutCount
     })
 
+    const { profile } = getProfile(node)
+
     const onRoute = Route()
     const state = {
         _setRoute: onRoute.setRoute.bind(onRoute),
         localNode: node,
+        profile,
         logoutCount,
         authStatus,
         route: signal(location.pathname + location.search)
@@ -41,6 +51,10 @@ export function State ():{
     })
 
     return state
+}
+
+export function setProfile (state:ReturnType<typeof State>, username:string) {
+    (state.authStatus.value as ReadyStatus).signUp(username)
 }
 
 export function createList (state:ReturnType<typeof State>, { name }:{

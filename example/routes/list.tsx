@@ -29,7 +29,7 @@ export const ListView:FunctionComponent<{
         })
     }, [params.id, localNode.value])
 
-    console.log('render list', project)
+    console.log('render list', project?.value)
 
     const handleChange = useCallback(function handleChange (
         task:ResolvedCoMap<Task>,

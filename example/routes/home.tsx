@@ -6,6 +6,8 @@ import { Primary as BtnPrimary } from '../components/button.js'
 export const Home:FunctionComponent<{
     state:ReturnType<typeof State>
 }> = function ({ state }) {
+    const { profile } = state
+
     function handleSubmit (ev:JSX.TargetedEvent) {
         ev.preventDefault()
         const { elements } = (ev.target as HTMLFormElement)
@@ -14,7 +16,15 @@ export const Home:FunctionComponent<{
         createList(state, { name: listName })
     }
 
+    console.log('rooooooooooot', profile.value?.root)
+    console.log('profile', profile.value)
+
     return (<div className="route home">
+        {profile.value?.root?.projects?.length ? <h1>My Projects</h1> : null}
+        {profile.value?.root?.projects?.map((project) => {
+            return <div key={project.id}>{project}</div>
+        })}
+
         <h2>Create a List</h2>
         <form className="create-list" onSubmit={handleSubmit}>
             <TextInput displayName="List name" name="list-name" />
