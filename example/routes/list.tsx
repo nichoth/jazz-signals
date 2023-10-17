@@ -1,52 +1,96 @@
 import { FunctionComponent } from 'preact'
-import { signal } from '@preact/signals'
-import { useMemo } from 'preact/hooks'
+import { useMemo, useCallback } from 'preact/hooks'
 import { CoID } from 'cojson'
-import { TodoProject, ListOfTasks } from '../types.js'
-import { State } from '../state.js'
-import { TextInput } from '../components/text-input.js'
-import { Primary as BtnPrimary } from '../components/button.js'
+import { ResolvedCoMap } from 'jazz-autosub'
+import { Task, TodoProject } from '../types.js'
+import { SubmittableInput } from '../components/submittable-input.js'
+import { ButtonBack } from '../components/btn-back.js'
+import { State, createTask } from '../state.js'
+// import { TextInput } from '../components/text-input.js'
+// import { Primary as BtnPrimary } from '../components/button.js'
 import { telepathicSignal } from '../../src/index.js'
+import './list.css'
 
 export const ListView:FunctionComponent<{
     state:ReturnType<typeof State>;
     params:{
-        ['id']:CoID<TodoProject>
+        ['id']:CoID<TodoProject>;
     }
 }> = function ({ state, params }) {
-    const [project] = (useMemo(() => {
+    const { localNode } = state
+
+    const [project] = useMemo(() => {
+        console.log('in memo')
+        if (!localNode.value) return []
+
         return telepathicSignal<TodoProject>({
             id: params.id,  // <-- here we consume the project ID
-            localNode: state.localNode
+            node: localNode.value
         })
-    }, [params.id, state.localNode.value])).value
+    }, [params.id, localNode.value])
 
-    // get tasks (the list of things to do)
-    // this is where we subscribe to task changes
-    const tasksSignal = useMemo(() => {
-        if (!project) return signal([])
-        const tasksId = project.get('tasks')
+    console.log('render list', project)
 
-        return telepathicSignal<ListOfTasks>({
-            id: tasksId,
-            localNode: state.localNode
-        })
-    }, [project, state.localNode.value])
+    const handleChange = useCallback(function handleChange (
+        task:ResolvedCoMap<Task>,
+        ev
+    ) {
+        // "done" status is all that can change
+        const checked = ev.target.form.elements['done-status'].checked
+        task.mutate(_task => _task.set('done', !!checked))
+    }, [])
 
-    const [tasks] = tasksSignal.value
-
-    console.log('__tasks__', tasks)
-
-    // @ts-ignore
-    window.tasks = tasks
+    function _createTask (text) {
+        if (!project || !project.value) throw new Error('not project')
+        createTask(project.value, { name: text })
+    }
 
     return (<div className="route list-view">
+        <div>
+            <a href="/" className="nav back">
+                <ButtonBack /> Back to lists
+            </a>
+        </div>
+
+        <h1>{project && project.value?.title}</h1>
+
         <ul className="todo-list">
-            {tasks?.asArray().map(taskId => {
-                console.log('**task id**', taskId)
-                return <li key={taskId}>{taskId}</li>
+            {project?.value?.tasks?.map(task => {
+                return (<li key={task && task.id}>
+                    <form onChange={handleChange.bind(null, task!)}>
+                        <label>
+                            <input defaultChecked={task?.get('done') || false}
+                                type="checkbox"
+                                name="done-status"
+                            />
+                            {task?.get('done') ?
+                                (<s>{task.get('text')}</s>) :
+                                (<span>{task?.get('text')}</span>)
+                            }
+                        </label>
+                    </form>
+                </li>)
             })}
         </ul>
-        <p>the list ID: {params.id}</p>
+
+        <div>
+            <NewTaskInputRow onCreateTask={_createTask} />
+        </div>
     </div>)
+}
+
+const NewTaskInputRow:FunctionComponent<{
+    onCreateTask: (text: string) => void;
+    disabled?: boolean;
+}> = function NewTaskInputRow ({
+    onCreateTask,
+    disabled,
+}) {
+    return (<SubmittableInput
+        action="Create a new task"
+        onSubmit={onCreateTask}
+        displayName="New task name"
+        minLength={3}
+        disabled={disabled}
+    />)
 }

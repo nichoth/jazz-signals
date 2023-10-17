@@ -34,11 +34,6 @@ function Example () {
     return (<div className="jazz-signals-example">
         {(authStatus.value.status === 'signedIn' ?
             (<div>
-                <div>
-                    you are
-                    <strong>{' ' + profile.value?.profile?.name}</strong>
-                </div>
-
                 <ChildNode state={state} params={match.params} />
             </div>) :
             <LoginPage />

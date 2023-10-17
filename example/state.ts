@@ -1,7 +1,8 @@
 import { Signal, signal } from '@preact/signals'
 import { createLocalNode, createLocalAuth, AuthStatus } from '../src/index.js'
 import { LocalNode } from 'cojson'
-import { ListOfTasks, TodoProject } from './types.js'
+import { Task, ListOfTasks, TodoProject } from './types.js'
+import { Resolved } from 'jazz-autosub'
 import Route from 'route-event'
 
 export function State ():{
@@ -59,4 +60,21 @@ export function createList (state:ReturnType<typeof State>, { name }:{
     state._setRoute(`/id/${project.id}`)
 
     return state
+}
+
+export function createTask (
+    project:Resolved<TodoProject>,
+    opts:{
+        name:string,
+    }
+) {
+    if (!project.tasks) return
+
+    const { name } = opts
+    const task = project.meta.group.createMap<Task>({
+        done: false,
+        text: name,
+    })
+
+    project.tasks.append(task.id)
 }

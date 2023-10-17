@@ -2,6 +2,7 @@ import { createBrowserNode, AuthProvider } from 'jazz-browser'
 import { Signal, signal, effect } from '@preact/signals'
 import { BrowserLocalAuth } from 'jazz-browser-auth-local'
 import { LocalNode, CoID, CoValue } from 'cojson'
+import { ResolvedAccount, Resolved, autoSub } from 'jazz-autosub'
 
 export type LoadingStatus = { status: 'loading' }
 export type ReadyStatus = {
@@ -112,35 +113,70 @@ export function createLocalNode ({
     return { done, node: nodeSignal }
 }
 
-/**
- * Create a new signal subscribed to some data in the given localNode.
- *
- * @returns {Signal<[ T|null, (()=>void)|null ]>} Return an array like
- * [ signal, unsubscribeFunction ]
- */
 export function telepathicSignal<T extends CoValue> ({
     id,
-    localNode
+    node
 }:{
-    id?:CoID<T>,
-    localNode:Signal<LocalNode|null>
-}):Signal<[ T|null, (()=>void)|null ]> {
-    const state:Signal<[ T|null, (()=>void)|null ]> = signal([null, null])
+    id:CoID<T>
+    node:LocalNode
+}):[Signal<Resolved<T>|null>, ()=>void] {
+    const state:Signal<Resolved<T>|null> = signal(null)
 
-    const dispose = effect(async () => {
-        if (!id || !localNode.value) return
+    console.log('in telepathic signal')
 
-        const node = await localNode.value.load(id)
-
-        const unsubscribe = node.subscribe(newState => {
-            state.value = [newState as T, allDone]
-
-            function allDone () {
-                unsubscribe()
-                dispose()
-            }
-        })
+    const unsubscribe = autoSub(id, node, (data:Resolved<T>) => {
+        state.value = data
     })
 
-    return state
+    return [state, unsubscribe]
 }
+
+/**
+ * Get your profile
+ */
+export function profile (node:LocalNode|null):{
+    profile:Signal<null|ResolvedAccount>;
+    unsubscribe:()=>void
+} {
+    const prof:Signal<null|ResolvedAccount> = signal(null)
+    if (!node) return { profile: prof, unsubscribe: () => {} }
+
+    const unsubscribe = autoSub('me', node, (resolved:ResolvedAccount) => {
+        prof.value = resolved
+    })
+
+    return { profile: prof, unsubscribe }
+}
+
+// /**
+//  * Create a new signal subscribed to some data in the given localNode.
+//  *
+//  * @returns {Signal<[ T|null, (()=>void)|null ]>} Return an array like
+//  * [ signal, unsubscribeFunction ]
+//  */
+// export function telepathicSignal<T extends CoValue> ({
+//     id,
+//     localNode
+// }:{
+//     id?:CoID<T>,
+//     localNode:Signal<LocalNode|null>
+// }):Signal<[ T|null, (()=>void)|null ]> {
+//     const state:Signal<[ T|null, (()=>void)|null ]> = signal([null, null])
+
+//     const dispose = effect(async () => {
+//         if (!id || !localNode.value) return
+
+//         const node = await localNode.value.load(id)
+
+//         const unsubscribe = node.subscribe(newState => {
+//             state.value = [newState as T, allDone]
+
+//             function allDone () {
+//                 unsubscribe()
+//                 dispose()
+//             }
+//         })
+//     })
+
+//     return state
+// }

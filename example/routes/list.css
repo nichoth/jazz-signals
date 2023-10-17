@@ -1,0 +1,14 @@
+h1 {
+    font-size: 1.4rem;
+}
+
+a {
+    text-decoration: none;
+}
+
+.nav.back {
+    & svg {
+        position: relative;
+        bottom: 2px;
+    }
+}
