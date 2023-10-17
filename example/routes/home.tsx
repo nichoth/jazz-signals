@@ -16,7 +16,7 @@ export const Home:FunctionComponent<{
         createList(state, { name: listName })
     }
 
-    console.log('rooooooooooot', profile.value?.root)
+    console.log('root...', profile.value?.root)
     console.log('profile', profile.value)
 
     return (<div className="route home">
