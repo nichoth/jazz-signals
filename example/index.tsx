@@ -17,8 +17,6 @@ function Example () {
     // @ts-ignore
     window.profile = profile
 
-    console.log('render', profile.value)
-
     const match = router.match(state.route.value)
     if (!match) {
         return (<div className="404">
