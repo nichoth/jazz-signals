@@ -4,10 +4,10 @@
   "main": "dist/index.js",
   "scripts": {
     "lint": "standardx -v \"./**/*.ts\"",
+    "test": "esbuild --bundle test/index.ts | node --input-type=module | tap-arc",
     "build-tests": "esbuild test/index.ts --bundle --format=cjs --keep-names > test/test-bundle.js",
-    "test": "npm run lint && npm run build && npm run build-tests && npm run test-tape-run",
+    "test-browser": "npm run lint && npm run build && npm run build-tests && npm run test-tape-run",
     "test-tape-run": "cat test/index.html | tape-run --input=html --static=test | tap-arc",
-    "//build": "mkdir -p ./dist && rm -rf ./dist/* && tsc --project tsconfig.build.json",
     "build": "mkdir -p ./dist && rm -rf ./dist/* && esbuild src/index.ts --outdir=dist --tsconfig=tsconfig.build.json",
     "start": "vite",
     "preversion": "npm run lint",
