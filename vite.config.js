@@ -7,6 +7,7 @@ export default defineConfig({
     define: {
         global: 'globalThis'
     },
+    base: '',
     root: 'example',
     plugins: [
         preact({
