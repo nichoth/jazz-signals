@@ -132,8 +132,6 @@ export function telepathicSignal<T extends CoValue> ({
 }):[Signal<Resolved<T>|null>, ()=>void] {
     const state:Signal<Resolved<T>|null> = signal(null)
 
-    console.log('in telepathic signal')
-
     const unsubscribe = autoSub(id, node, (data:Resolved<T>) => {
         state.value = data
     })

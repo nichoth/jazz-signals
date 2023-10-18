@@ -11,6 +11,8 @@ const router = Router()
 const state = State()
 const { profile, authStatus } = state
 
+render((<Example />), document.getElementById('root')!)
+
 function Example () {
     // @ts-ignore
     window.profile = profile
@@ -35,8 +37,6 @@ function Example () {
         )}
     </div>)
 }
-
-render((<Example />), document.getElementById('root')!)
 
 function LoginPage ({ state }) {
     const [loginState, setState] = useState<null|'register'>(null)

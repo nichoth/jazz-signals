@@ -12,6 +12,12 @@ import {
 } from '../src/index.js'
 import { Task, ListOfTasks, TodoProject, TodoAccountRoot } from './types.js'
 
+/**
+ * Create a localNode
+ * Subscribe to Jazz objects
+ * Get your profile
+ * Authenticate
+ */
 export function State ():{
     localNode:Signal<LocalNode|null>;
     authStatus:Signal<AuthStatus>;
