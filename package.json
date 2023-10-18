@@ -9,7 +9,7 @@
     "test-browser": "npm run lint && npm run build && npm run build-tests && npm run test-tape-run",
     "test-tape-run": "cat test/index.html | tape-run --input=html --static=test | tap-arc",
     "build": "mkdir -p ./dist && rm -rf ./dist/* && esbuild src/index.ts --outdir=dist --tsconfig=tsconfig.build.json",
-    "build-example": "mkdir -p ./public && rm -rf ./public/* && vite build",
+    "build-example": "mkdir -p ./public && rm -rf ./public/* && vite build --base=./",
     "start": "vite",
     "preversion": "npm run lint",
     "postversion": "git push && git push --tags && npm publish",
