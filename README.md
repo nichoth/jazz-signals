@@ -1,4 +1,4 @@
-# jazz signals ![tests](https://github.com/nichoth/jass-signals/actions/workflows/nodejs.yml/badge.svg)
+# jazz signals ![tests](https://github.com/nichoth/jazz-signals/actions/workflows/nodejs.yml/badge.svg)
 
 __WIP__
 
