@@ -4,7 +4,7 @@
     "module": "NodeNext",
     "target": "ES2022",
     "moduleResolution": "nodenext",
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "lib": ["ES2022", "DOM", "WebWorker"],
     "allowJs": false,
     "skipLibCheck": true,
@@ -17,12 +17,14 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "noImplicitAny": false,
     "declaration": true,
     "declarationDir": "dist",
-    "declarationMap": true
+    "declarationMap": true,
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxImportSource": "preact",
+    "jsxFragmentFactory": "Fragment",
+    "noImplicitAny": false
   },
   "include": [
     "example",
