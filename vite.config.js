@@ -21,7 +21,7 @@ export default defineConfig({
     esbuild: {
         logOverride: { 'this-is-undefined-in-esm': 'silent' }
     },
-    publicDir: '_public',
+    publicDir: '../_public',
     css: {
         postcss: {
             plugins: [

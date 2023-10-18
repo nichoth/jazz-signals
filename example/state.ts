@@ -75,7 +75,7 @@ export function createList (state:ReturnType<typeof State>, { name }:{
 
     const { profile } = state
 
-    effect(() => {
+    const dispose = effect(() => {
         if (!profile.value) return
         const projectGroup = profile.value.createGroup()
 
@@ -90,7 +90,7 @@ export function createList (state:ReturnType<typeof State>, { name }:{
         state._setRoute(`/id/${project.id}`)
     })
 
-    return state
+    return dispose
 }
 
 export function createTask (
