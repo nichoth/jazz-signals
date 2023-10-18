@@ -59,8 +59,10 @@ export function State ():{
 
     onRoute((path) => {
         state.route.value = path
+        console.log('path', path)
     })
 
+    console.log('route in state', state.route)
     return state
 }
 
