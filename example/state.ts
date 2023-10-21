@@ -58,9 +58,8 @@ export function State ():{
     }
 
     onRoute((path:string) => {
-        console.log('path', path)
-        path.replace('/jazz-signals/', '/')  // for github pages
-        state.route.value = path
+        const newPath = path.replace('/jazz-signals/', '/')  // for github pages
+        state.route.value = newPath
     })
 
     return state
