@@ -4,3 +4,4 @@ __WIP__
 
 Use `@preact/signals` with [jazz](https://jazz.tools/).
 
+[See a live example](https://nichoth.github.io/jazz-signals/)
