@@ -14,9 +14,9 @@ export const SubmittableInput:FunctionComponent<{
     const { primary, disabled, onSubmit, displayName, action, minLength } = props
     const [isValid, setValid] = useState(false)
 
-    const handleSubmit = useCallback(function handleSubmit (ev) {
+    const handleSubmit = useCallback(function handleSubmit (ev:SubmitEvent) {
         ev.preventDefault()
-        const textEl = ev.target.elements.namedItem(
+        const textEl = (ev.target as HTMLFormElement).elements.namedItem(
             'text'
         ) as HTMLInputElement
 
@@ -32,7 +32,7 @@ export const SubmittableInput:FunctionComponent<{
     }
 
     // need this because `onInput` event doesnt work for cmd + delete event
-    async function onFormKeydown (ev:KeyboardEvent) {
+    function onFormKeydown (ev:KeyboardEvent) {
         const key = ev.key
         const { form } = ev.target as HTMLInputElement
         if (!form) return

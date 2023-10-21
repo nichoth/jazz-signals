@@ -57,12 +57,11 @@ export function State ():{
         route: signal(location.pathname + location.search)
     }
 
-    onRoute((path) => {
+    onRoute((path:string) => {
+        path.replace('/jazz-signals/', '/')  // for github pages
         state.route.value = path
-        console.log('path', path)
     })
 
-    console.log('route in state', state.route)
     return state
 }
 
