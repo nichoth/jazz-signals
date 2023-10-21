@@ -2,4 +2,5 @@
 
 __WIP__
 
-Use `@preact/signals` with `jazz`
+Use `@preact/signals` with [jazz](https://jazz.tools/).
+
