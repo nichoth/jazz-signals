@@ -58,6 +58,7 @@ export function State ():{
     }
 
     onRoute((path:string) => {
+        console.log('path', path)
         path.replace('/jazz-signals/', '/')  // for github pages
         state.route.value = path
     })
