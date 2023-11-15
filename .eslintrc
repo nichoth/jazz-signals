@@ -9,6 +9,8 @@
   "rules": {
     "operator-linebreak": ["off"],
     "object-curly-spacing": ["off"],
+    "react/jsx-wrap-multilines": ["off"],
+    "react/jsx-indent": ["off"],
     "react/jsx-first-prop-new-line": ["off"],
     "react/jsx-indent-props": "off",
     "react/jsx-closing-tag-location": ["off"],
