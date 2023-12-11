@@ -28,6 +28,9 @@ export const ListView:FunctionComponent<{
         })
     }, [params.id, localNode.value])
 
+    /**
+     * Each list item is a form
+     */
     const handleChange = useCallback(function handleChange (
         task:ResolvedCoMap<Task>,
         ev
