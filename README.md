@@ -1,4 +1,8 @@
-# jazz signals ![tests](https://github.com/nichoth/jazz-signals/actions/workflows/nodejs.yml/badge.svg)
+# jazz signals
+![tests](https://github.com/nichoth/jazz-signals/actions/workflows/nodejs.yml/badge.svg)
+[![module](https://img.shields.io/badge/module-ESM-blue)](README.md)
+[![license](https://img.shields.io/badge/license-PolyForm%20Shield-fc9662)](LICENSE)
+
 
 __WIP__
 
