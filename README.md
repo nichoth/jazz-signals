@@ -17,6 +17,7 @@ Return an array of `[Signal, unsubscribeFunction]`.
 
 ```ts
 import { LocalNode } from  'cojson'
+import { Resolved } from 'jazz-autosub'
 
 export function telepathicSignal<T extends CoValue> ({ id, node }:{
     id:CoID<T>
