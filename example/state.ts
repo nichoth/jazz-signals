@@ -45,6 +45,9 @@ export function State ():{
         logoutCount
     })
 
+    // @ts-ignore
+    window.node = node
+
     const { profile } = getProfile<Profile, TodoAccountRoot, AccountMeta>(node)
 
     const onRoute = Route()
@@ -56,6 +59,9 @@ export function State ():{
         authStatus,
         route: signal(location.pathname + location.search)
     }
+
+    // @ts-ignore
+    window.state = state
 
     onRoute((path:string) => {
         const newPath = path.replace('/jazz-signals/', '/')  // for github pages
